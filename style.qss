@@ -1,0 +1,68 @@
+QWidget {
+    background-color: #F4F6F9;
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+    color: #1F2937;
+}
+
+QLabel#sectionTitle {
+    font-size: 14px;
+    font-weight: bold;
+    color: #111827;
+}
+
+QDoubleSpinBox {
+    background-color: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    padding: 4px 8px;
+    min-height: 24px;
+    font-weight: 500;
+}
+
+QDoubleSpinBox:read-only {
+    background-color: #E2E8F0;
+    color: #0F172A;
+    font-weight: bold;
+}
+
+QPushButton {
+    background-color: #E2E8F0;
+    border: 1px solid #94A3B8;
+    border-radius: 7px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1E293B;
+}
+
+QPushButton:hover {
+    background-color: #CBD5E1;
+}
+
+QPushButton#startStopButton {
+    background-color: #DCFCE7;
+    border: 1px solid #16A34A;
+    color: #15803D;
+    font-size: 15px;
+}
+
+QPushButton#startStopButton:checked {
+    background-color: #FEE2E2;
+    border: 1px solid #DC2626;
+    color: #B91C1C;
+}
+
+QComboBox {
+    background-color: #FFFFFF;
+    border: 1px solid #CBD5E1;
+    border-radius: 6px;
+    padding: 5px 10px;
+    min-height: 26px;
+}
+
+QFrame#conductorBar {
+    background-color: #9CA3AF;
+    border: 1px solid #6B7280;
+    border-radius: 2px;
+}
