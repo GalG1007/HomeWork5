@@ -16,6 +16,7 @@ from PySide6.QtWidgets import (
     QAbstractSpinBox,
     QComboBox,
     QMessageBox,
+    QCheckBox,
 )
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QPixmap
@@ -41,7 +42,7 @@ class AboutWindow(QWidget):
 
         title_label = QLabel("Heat Conduction Simulation")
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("font-size: 20px; font-weight: bold; color: #0F172A;")
+        title_label.setStyleSheet("font-size: 20px; font-weight: bold; color: #F8FAFC;")
         layout.addWidget(title_label)
 
         image_label = QLabel()
@@ -52,10 +53,13 @@ class AboutWindow(QWidget):
                 320, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation
             )
             image_label.setPixmap(pixmap)
+            image_label.setStyleSheet(
+                "background-color: #FFFFFF; border-radius: 10px; padding: 8px; border: 1px solid #334155;"
+            )
         else:
             image_label.setText("[ Place heat_conduction.png in HomeWork5 ]")
             image_label.setStyleSheet(
-                "border: 1px dashed #94A3B8; padding: 28px; color: #64748B; border-radius: 8px;"
+                "border: 1px dashed #475569; padding: 28px; color: #94A3B8; border-radius: 8px;"
             )
         layout.addWidget(image_label)
 
@@ -71,7 +75,7 @@ class AboutWindow(QWidget):
         
         github_url = "https://github.com/GalG1007/HomeWork5"
         link_label = QLabel(
-            f'<a href="{github_url}" style="color: #2563EB; font-weight: bold;">'
+            f'<a href="{github_url}" style="color: #38BDF8; font-weight: bold;">'
             f"GitHub Project Repository</a>"
         )
         link_label.setAlignment(Qt.AlignCenter)
@@ -126,9 +130,14 @@ class GraphWindow(QWidget):
         main_layout.addLayout(controls_layout, stretch=1)
 
     def _format_axes(self):
-        self.ax.set_xlabel("Time (s)")
-        self.ax.set_ylabel("Temperature (°C)")
-        self.ax.grid(True, linestyle="--", alpha=0.5)
+        self.figure.patch.set_facecolor("#0F172A")
+        self.ax.set_facecolor("#1E293B")
+        self.ax.set_xlabel("Time (s)", color="#E2E8F0")
+        self.ax.set_ylabel("Temperature (°C)", color="#E2E8F0")
+        self.ax.tick_params(colors="#CBD5E1")
+        for spine in self.ax.spines.values():
+            spine.set_color("#334155")
+        self.ax.grid(True, linestyle="--", color="#334155", alpha=0.7)
         self.figure.tight_layout()
 
     def draw_graph(self):
@@ -138,24 +147,25 @@ class GraphWindow(QWidget):
             self.ax.plot(
                 self.main_window.time_history,
                 self.main_window.body1_temp_history,
-                color="red",
+                color="#F87171",
+                linewidth=2.0,
                 label="Body 1",
             )
         elif body == "Body 2":
             self.ax.plot(
                 self.main_window.time_history,
                 self.main_window.body2_temp_history,
-                color="blue",
+                color="#38BDF8",
+                linewidth=2.0,
                 label="Body 2",
             )
 
-        self.ax.legend()
+        self.ax.legend(facecolor="#0F172A", edgecolor="#334155", labelcolor="#F1F5F9")
         self.canvas.draw()
 
     def clear_graph(self):
         self.ax.clear()
-        self.ax.set_xlabel("Time (s)")
-        self.ax.set_ylabel("Temperature (°C)")
+        self._format_axes()
         self.canvas.draw()
 
     def export_to_csv(self):
@@ -222,9 +232,7 @@ class HeatTransfer(QWidget):
 
         self.left_body_frame = QFrame()
         self.left_body_frame.setFixedSize(115, 170)
-        self.left_body_frame.setStyleSheet(
-            "background-color: rgb(255, 0, 0); border-radius: 8px; border: 1px solid #334155;"
-        )
+        self.left_body_frame.setStyleSheet(self._body_frame_style(255))
         top_layout.addWidget(self.left_body_frame)
 
         center_top_layout = QVBoxLayout()
@@ -255,9 +263,7 @@ class HeatTransfer(QWidget):
 
         self.right_body_frame = QFrame()
         self.right_body_frame.setFixedSize(115, 170)
-        self.right_body_frame.setStyleSheet(
-            "background-color: rgb(0, 0, 0); border-radius: 8px; border: 1px solid #334155;"
-        )
+        self.right_body_frame.setStyleSheet(self._body_frame_style(0))
         top_layout.addWidget(self.right_body_frame)
         top_layout.addSpacing(14)
 
@@ -310,6 +316,9 @@ class HeatTransfer(QWidget):
         self.about_button.setFixedWidth(130)
         self.about_button.clicked.connect(self.open_about_window)
         buttons_layout.addWidget(self.about_button)
+        self.auto_stop_checkbox = QCheckBox("Auto Stop")
+        self.auto_stop_checkbox.setChecked(True)
+        buttons_layout.addWidget(self.auto_stop_checkbox, alignment=Qt.AlignCenter)
 
         bottom_layout.addLayout(buttons_layout)
 
@@ -352,17 +361,24 @@ class HeatTransfer(QWidget):
         box.setFixedWidth(115)
         return box
 
+    @staticmethod
+    def _body_frame_style(red: int) -> str:
+        return (
+            f"background-color: rgb({red}, 0, 0); "
+            "border-radius: 8px; border: 1px solid #475569;"
+        )
+
     def left_temperature_changed(self):
         temp = self.left_temp_slider.value()
         self.left_temp_display.setValue(temp)
         red = int(temp * 255 / 200)
-        self.left_body_frame.setStyleSheet(f"background-color: rgb({red}, 0, 0);")
+        self.left_body_frame.setStyleSheet(self._body_frame_style(red))
 
     def right_temperature_changed(self):
         temp = self.right_temp_slider.value()
         self.right_temp_display.setValue(temp)
         red = int(temp * 255 / 200)
-        self.right_body_frame.setStyleSheet(f"background-color: rgb({red}, 0, 0);")
+        self.right_body_frame.setStyleSheet(self._body_frame_style(red))
 
     def start_stop_button_method(self):
         if self.start_stop_button.isChecked():
@@ -417,8 +433,10 @@ class HeatTransfer(QWidget):
 
         red1 = int(new_t1 * 255 / 200)
         red2 = int(new_t2 * 255 / 200)
-        self.left_body_frame.setStyleSheet(f"background-color: rgb({red1}, 0, 0);")
-        self.right_body_frame.setStyleSheet(f"background-color: rgb({red2}, 0, 0);")
+        self.left_body_frame.setStyleSheet(self._body_frame_style(red1))
+        self.right_body_frame.setStyleSheet(self._body_frame_style(red2))
+        if self.auto_stop_checkbox.isChecked() and abs(new_t1 - new_t2) < 0.1:
+            self.start_stop_button.setChecked(False)
 
     def open_graph_window(self):
         self.graph_window.show()
@@ -431,6 +449,7 @@ class HeatTransfer(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
 
     qss_path = os.path.join(os.path.dirname(__file__), "style.qss")
     if os.path.exists(qss_path):
