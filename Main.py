@@ -306,6 +306,9 @@ class HeatTransfer(QWidget):
         self.start_stop_button.setFixedWidth(130)
         self.start_stop_button.toggled.connect(self.start_stop_button_method)
         buttons_layout.addWidget(self.start_stop_button)
+        self.reset_button = QPushButton("Reset")
+        self.reset_button.clicked.connect(self.reset_simulation)
+        buttons_layout.addWidget(self.reset_button)
 
         self.graphs_button = QPushButton("Graphs")
         self.graphs_button.setFixedWidth(130)
@@ -419,6 +422,32 @@ class HeatTransfer(QWidget):
             self.timer.stop()
             self.start_stop_button.setText("Start")
 
+    def reset_simulation(self):
+        
+        self.timer.stop()
+        self.start_stop_button.setChecked(False)
+        self.start_stop_button.setText("Start")
+
+        
+        self.left_temp_slider.setValue(200)
+        self.right_temp_slider.setValue(0)
+        self.left_temperature_changed()
+        self.right_temperature_changed()
+
+        
+        self.left_mass_spinbox.setValue(10.0)
+        self.right_mass_spinbox.setValue(10.0)
+        self.left_hcap_spinbox.setValue(0.4)
+        self.right_hcap_spinbox.setValue(0.4)
+        self.conductivity_spinbox.setValue(1.0)
+
+        
+        self.elapsed_time = 0.0
+        self.time_history = []
+        self.body1_temp_history = []
+        self.body2_temp_history = []
+        self.graph_window.clear_graph()
+
     def timer_method(self):
         sigma = self.conductivity_spinbox.value()
         t1 = self.body1.temperature
@@ -448,7 +477,7 @@ class HeatTransfer(QWidget):
         self.left_body_frame.setStyleSheet(self._body_frame_style(red1))
         self.right_body_frame.setStyleSheet(self._body_frame_style(red2))
         self.update_conductor_gradient()
-        
+
         if self.auto_stop_checkbox.isChecked() and abs(new_t1 - new_t2) < 0.1:
             self.start_stop_button.setChecked(False)
 
