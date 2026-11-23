@@ -13,6 +13,7 @@ QLabel#sectionTitle {
 
 QDoubleSpinBox {
     background-color: #FFFFFF;
+    color: #0F172A;
     border: 1px solid #CBD5E1;
     border-radius: 6px;
     padding: 4px 8px;
@@ -20,10 +21,15 @@ QDoubleSpinBox {
     font-weight: 500;
 }
 
-QDoubleSpinBox:read-only {
+QDoubleSpinBox[readOnly="true"] {
     background-color: #E2E8F0;
     color: #0F172A;
     font-weight: bold;
+}
+
+QDoubleSpinBox QLineEdit {
+    color: #0F172A;
+    background: transparent;
 }
 
 QPushButton {

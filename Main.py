@@ -178,7 +178,7 @@ class HeatTransfer(QWidget):
 
         
         top_layout = QHBoxLayout()
-        top_layout.setSpacing(14)
+        top_layout.setSpacing(0)
 
         self.left_temp_slider = QSlider(Qt.Vertical)
         self.left_temp_slider.setRange(0, 200)
@@ -186,6 +186,7 @@ class HeatTransfer(QWidget):
         self.left_temp_slider.setFixedHeight(170)
         self.left_temp_slider.valueChanged.connect(self.left_temperature_changed)
         top_layout.addWidget(self.left_temp_slider)
+        top_layout.addSpacing(14)
 
         self.left_body_frame = QFrame()
         self.left_body_frame.setFixedSize(115, 170)
@@ -195,7 +196,8 @@ class HeatTransfer(QWidget):
         top_layout.addWidget(self.left_body_frame)
 
         center_top_layout = QVBoxLayout()
-        center_top_layout.setAlignment(Qt.AlignCenter)
+        center_top_layout.setContentsMargins(0, 0, 0, 0)
+        center_top_layout.setAlignment(Qt.AlignVCenter)
         center_top_layout.setSpacing(10)
 
         cond_label = QLabel("Conductivity")
@@ -214,10 +216,10 @@ class HeatTransfer(QWidget):
 
         self.conductor_bar = QFrame()
         self.conductor_bar.setObjectName("conductorBar")
-        self.conductor_bar.setFixedSize(170, 28)
-        center_top_layout.addWidget(self.conductor_bar, alignment=Qt.AlignCenter)
+        self.conductor_bar.setFixedHeight(28)
+        center_top_layout.addWidget(self.conductor_bar)
 
-        top_layout.addLayout(center_top_layout)
+        top_layout.addLayout(center_top_layout, stretch=1)
 
         self.right_body_frame = QFrame()
         self.right_body_frame.setFixedSize(115, 170)
@@ -225,6 +227,7 @@ class HeatTransfer(QWidget):
             "background-color: rgb(0, 0, 0); border-radius: 8px; border: 1px solid #334155;"
         )
         top_layout.addWidget(self.right_body_frame)
+        top_layout.addSpacing(14)
 
         self.right_temp_slider = QSlider(Qt.Vertical)
         self.right_temp_slider.setRange(0, 200)
@@ -357,8 +360,33 @@ class HeatTransfer(QWidget):
             self.start_stop_button.setText("Start")
 
     def timer_method(self):
+        sigma = self.conductivity_spinbox.value()
+        t1 = self.body1.temperature
+        t2 = self.body2.temperature
+        i1 = sigma * (t2 - t1)
+        i2 = sigma * (t1 - t2)
+        dq1 = i1 * self.dt
+        dq2 = i2 * self.dt
+        new_t1 = self.body1.add_heat(dq1)
+        new_t2 = self.body2.add_heat(dq2)
+
         
-        pass
+        self.elapsed_time += self.dt
+        self.time_history.append(self.elapsed_time)
+        self.body1_temp_history.append(new_t1)
+        self.body2_temp_history.append(new_t2)
+
+        
+        self.left_temp_slider.setValue(int(new_t1))
+        self.right_temp_slider.setValue(int(new_t2))
+
+        self.left_temp_display.setValue(new_t1)
+        self.right_temp_display.setValue(new_t2)
+
+        red1 = int(new_t1 * 255 / 200)
+        red2 = int(new_t2 * 255 / 200)
+        self.left_body_frame.setStyleSheet(f"background-color: rgb({red1}, 0, 0);")
+        self.right_body_frame.setStyleSheet(f"background-color: rgb({red2}, 0, 0);")
 
     def open_graph_window(self):
         self.graph_window.show()
