@@ -201,6 +201,14 @@ class HeatTransfer(QWidget):
         self.body1 = None
         self.body2 = None
         self.dt = 0.05
+        self.materials = {
+            "Custom": None,
+            "Copper": 0.39,
+            "Iron": 0.45,
+            "Aluminum": 0.90,
+            "Water": 4.18,
+            "Lead": 0.13,
+        }
         self.elapsed_time = 0.0
         self.time_history = []
         self.body1_temp_history = []
@@ -287,7 +295,12 @@ class HeatTransfer(QWidget):
         self.left_temp_display = self._create_temp_display(200.0)
         self.left_mass_spinbox = self._create_param_spinbox(10.00, " kg")
         self.left_hcap_spinbox = self._create_param_spinbox(0.40, " J/kg°C")
-
+        left_params.addWidget(QLabel("Material"), 3, 0)
+        self.left_material_combo = QComboBox()
+        self.left_material_combo.addItems(self.materials.keys())
+        self.left_material_combo.currentTextChanged.connect(self.left_material_changed)
+        left_params.addWidget(self.left_material_combo, 3, 1)
+        
         left_params.addWidget(QLabel("Temp."), 0, 0)
         left_params.addWidget(self.left_temp_display, 0, 1)
         left_params.addWidget(QLabel("Mass"), 1, 0)
@@ -333,12 +346,18 @@ class HeatTransfer(QWidget):
         self.right_mass_spinbox = self._create_param_spinbox(10.00, " kg")
         self.right_hcap_spinbox = self._create_param_spinbox(0.40, " J/kg°C")
 
+
         right_params.addWidget(self.right_temp_display, 0, 0)
         right_params.addWidget(QLabel("Temp."), 0, 1)
         right_params.addWidget(self.right_mass_spinbox, 1, 0)
         right_params.addWidget(QLabel("Mass"), 1, 1)
         right_params.addWidget(self.right_hcap_spinbox, 2, 0)
         right_params.addWidget(QLabel("H. Cap."), 2, 1)
+        self.right_material_combo = QComboBox()
+        self.right_material_combo.addItems(self.materials.keys())
+        self.right_material_combo.currentTextChanged.connect(self.right_material_changed)
+        right_params.addWidget(self.right_material_combo, 3, 0)
+        right_params.addWidget(QLabel("Material"), 3, 1)
         bottom_layout.addLayout(right_params)
 
         main_layout.addLayout(bottom_layout)
@@ -394,6 +413,18 @@ class HeatTransfer(QWidget):
         red = int(temp * 255 / 200)
         self.right_body_frame.setStyleSheet(self._body_frame_style(red))
         self.update_conductor_gradient()
+
+    def left_material_changed(self):
+        material = self.left_material_combo.currentText()
+        hcap = self.materials[material]
+        if hcap is not None:
+            self.left_hcap_spinbox.setValue(hcap)
+
+    def right_material_changed(self):
+        material = self.right_material_combo.currentText()
+        hcap = self.materials[material]
+        if hcap is not None:
+            self.right_hcap_spinbox.setValue(hcap)
 
     def start_stop_button_method(self):
         if self.start_stop_button.isChecked():
