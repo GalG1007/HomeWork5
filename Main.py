@@ -339,6 +339,7 @@ class HeatTransfer(QWidget):
         bottom_layout.addLayout(right_params)
 
         main_layout.addLayout(bottom_layout)
+        self.update_conductor_gradient()
 
     def _create_temp_display(self, default_val: float) -> QDoubleSpinBox:
         box = QDoubleSpinBox()
@@ -368,17 +369,28 @@ class HeatTransfer(QWidget):
             "border-radius: 8px; border: 1px solid #475569;"
         )
 
+    def update_conductor_gradient(self):
+        red1 = int(self.left_temp_display.value() * 255 / 200)
+        red2 = int(self.right_temp_display.value() * 255 / 200)
+        self.conductor_bar.setStyleSheet(
+            f"background: qlineargradient(x1:0, y1:0, x2:1, y2:0, "
+            f"stop:0 rgb({red1}, 0, 0), stop:1 rgb({red2}, 0, 0)); "
+            f"border-top: 1px solid #334155; border-bottom: 1px solid #334155;"
+        )
+
     def left_temperature_changed(self):
         temp = self.left_temp_slider.value()
         self.left_temp_display.setValue(temp)
         red = int(temp * 255 / 200)
         self.left_body_frame.setStyleSheet(self._body_frame_style(red))
+        self.update_conductor_gradient()
 
     def right_temperature_changed(self):
         temp = self.right_temp_slider.value()
         self.right_temp_display.setValue(temp)
         red = int(temp * 255 / 200)
         self.right_body_frame.setStyleSheet(self._body_frame_style(red))
+        self.update_conductor_gradient()
 
     def start_stop_button_method(self):
         if self.start_stop_button.isChecked():
@@ -435,6 +447,8 @@ class HeatTransfer(QWidget):
         red2 = int(new_t2 * 255 / 200)
         self.left_body_frame.setStyleSheet(self._body_frame_style(red1))
         self.right_body_frame.setStyleSheet(self._body_frame_style(red2))
+        self.update_conductor_gradient()
+        
         if self.auto_stop_checkbox.isChecked() and abs(new_t1 - new_t2) < 0.1:
             self.start_stop_button.setChecked(False)
 
