@@ -317,22 +317,21 @@ class HeatTransfer(QWidget):
         box.setFixedWidth(115)
         return box
 
-    def update_body_color(self, frame: QFrame, temperature: float):
-        
-        pass
-
     def left_temperature_changed(self):
-        
-        pass
+        temp = self.left_temp_slider.value()
+        self.left_temp_display.setValue(temp)
+        red = int(temp * 255 / 200)
+        self.left_body_frame.setStyleSheet(f"background-color: rgb({red}, 0, 0);")
 
     def right_temperature_changed(self):
-        
-        pass
+        temp = self.right_temp_slider.value()
+        self.right_temp_display.setValue(temp)
+        red = int(temp * 255 / 200)
+        self.right_body_frame.setStyleSheet(f"background-color: rgb({red}, 0, 0);")
 
     def start_stop_button_method(self):
-        
         pass
-
+    
     def timer_method(self):
         
         pass
