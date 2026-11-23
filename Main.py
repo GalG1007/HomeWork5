@@ -159,8 +159,21 @@ class GraphWindow(QWidget):
         self.canvas.draw()
 
     def export_to_csv(self):
-        
-        pass
+        filename = "heat_transfer_results.csv"
+
+        with open(filename, "w") as f:
+            f.write("Time (s),Temperature 1 (C),Temperature 2 (C)\n")
+
+            for i in range(len(self.main_window.time_history)):
+                t = self.main_window.time_history[i]
+                t1 = self.main_window.body1_temp_history[i]
+                t2 = self.main_window.body2_temp_history[i]
+                f.write(f"{t:.2f},{t1:.2f},{t2:.2f}\n")
+
+        if os.name == "nt":
+            os.startfile(filename)
+        else:
+            os.system(f"open {filename}")
 
 
 
