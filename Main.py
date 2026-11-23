@@ -330,8 +330,32 @@ class HeatTransfer(QWidget):
         self.right_body_frame.setStyleSheet(f"background-color: rgb({red}, 0, 0);")
 
     def start_stop_button_method(self):
-        pass
-    
+        if self.start_stop_button.isChecked():
+            self.start_stop_button.setText("Stop")
+
+            
+            self.body1 = Body(
+                self.left_mass_spinbox.value(),
+                self.left_hcap_spinbox.value(),
+                self.left_temp_display.value(),
+            )
+            self.body2 = Body(
+                self.right_mass_spinbox.value(),
+                self.right_hcap_spinbox.value(),
+                self.right_temp_display.value(),
+            )
+
+            
+            self.elapsed_time = 0.0
+            self.time_history = [0.0]
+            self.body1_temp_history = [self.body1.temperature]
+            self.body2_temp_history = [self.body2.temperature]
+
+            self.timer.start()
+        else:
+            self.timer.stop()
+            self.start_stop_button.setText("Start")
+
     def timer_method(self):
         
         pass
