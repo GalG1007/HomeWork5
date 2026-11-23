@@ -132,12 +132,31 @@ class GraphWindow(QWidget):
         self.figure.tight_layout()
 
     def draw_graph(self):
-        
-        pass
+        body = self.body_selector.currentText()
+
+        if body == "Body 1":
+            self.ax.plot(
+                self.main_window.time_history,
+                self.main_window.body1_temp_history,
+                color="red",
+                label="Body 1",
+            )
+        elif body == "Body 2":
+            self.ax.plot(
+                self.main_window.time_history,
+                self.main_window.body2_temp_history,
+                color="blue",
+                label="Body 2",
+            )
+
+        self.ax.legend()
+        self.canvas.draw()
 
     def clear_graph(self):
-        
-        pass
+        self.ax.clear()
+        self.ax.set_xlabel("Time (s)")
+        self.ax.set_ylabel("Temperature (°C)")
+        self.canvas.draw()
 
     def export_to_csv(self):
         
